@@ -1,0 +1,12 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field %}
+    <div>
+        {% set src = 'default_path' %}
+
+        {% if object.image is not null %}
+            {% set src = '{{ object.image.webPath }}' %}
+        {%  endif %}
+        <img src="{{ src }}" />
+    </div>
+{% endblock %}

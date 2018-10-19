@@ -30,6 +30,13 @@ abstract class BaseListingCategoryTranslation
      */
     protected $name;
 
+    /**
+     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
+     *
+     * @var string
+     */
+    protected $description;
+
     public function __construct()
     {
 
@@ -42,7 +49,7 @@ abstract class BaseListingCategoryTranslation
 
     public function getSluggableFields()
     {
-        return ['name', 'id'];
+        return ['name', 'description', 'id'];
     }
 
     /**
@@ -78,4 +85,26 @@ abstract class BaseListingCategoryTranslation
         return $this->name;
     }
 
+    /**
+     * Set description
+     *
+     * @param  string $description
+     * @return ListingCharacteristicTranslation
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

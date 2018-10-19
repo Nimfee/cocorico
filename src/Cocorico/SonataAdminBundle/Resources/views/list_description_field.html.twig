@@ -1,0 +1,8 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field %}
+    <div>
+        {% set desc = value|trans({}, field_description.options.data_trans) %}
+        {{ desc|length > 50 ? desc|slice(0, 50) ~ '...' : desc  }}
+    </div>
+{% endblock %}

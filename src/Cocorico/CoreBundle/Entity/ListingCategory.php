@@ -66,6 +66,13 @@ class ListingCategory extends BaseListingCategory
      */
     private $fields;
 
+    /**
+     * For Asserts @see \Cocorico\CoreBundle\Validator\Constraints\ListingValidator
+     *
+     * @ORM\OneToOne(targetEntity="ListingCategoryImage", mappedBy="listingCategory", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OrderBy({"position" = "asc"})
+     */
+    private $image;
 
     public function __construct()
     {
@@ -224,11 +231,40 @@ class ListingCategory extends BaseListingCategory
         return $this->translate()->getName();
     }
 
+    public function getDescription()
+    {
+        return $this->translate()->getDescription();
+    }
+
     /**
      * @return string
      */
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Set image
+     *
+     * @param  \Cocorico\CoreBundle\Entity\ListingCategoryImage $image
+     * @return ListingCategory
+     */
+    public function setImage(ListingCategoryImage $image)
+    {
+        $image->setListingCategory($this);
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image
+     *
+     * @return ListingCategoryImage
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 }

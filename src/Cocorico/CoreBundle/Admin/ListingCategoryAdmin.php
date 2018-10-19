@@ -72,6 +72,10 @@ class ListingCategoryAdmin extends Admin
                             'field_type' => 'text',
                             'locale_options' => $titles,
                         ),
+                        'description' => array(
+                            'field_type' => 'text',
+                            'locale_options' => $titles,
+                        ),
                         'slug' => array(
                             'field_type' => 'hidden'
                         )
@@ -117,6 +121,11 @@ class ListingCategoryAdmin extends Admin
                 'parent',
                 null,
                 array('label' => 'admin.listing_category.parent.label')
+            )
+            ->add(
+                'translations.description',
+                null,
+                array('label' => 'admin.listing_category.description.label')
             );
     }
 
@@ -129,6 +138,23 @@ class ListingCategoryAdmin extends Admin
                 null,
                 array(
                     'label' => 'admin.listing_category.name.label',
+                )
+            )
+            ->add(
+                'description',
+                null,
+                array(
+                    'label' => 'admin.listing_category.description.label',
+                    'template' => 'CocoricoSonataAdminBundle::list_description_field.html.twig',
+                    'data_trans' => 'SonataAdminBundle'
+                )
+            )
+            ->add(
+                'image',
+                null,
+                array(
+                    'label' => 'admin.listing_category.image.label',
+                    'template' => 'CocoricoSonataAdminBundle::list_image_field.html.twig',
                 )
             )
             ->addIdentifier(
@@ -166,6 +192,8 @@ class ListingCategoryAdmin extends Admin
         return array(
             'Id' => 'id',
             'name' => 'name',
+            'image' => 'image',
+            'description' => 'description',
             'category' => 'parent'
         );
     }
