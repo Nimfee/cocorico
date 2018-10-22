@@ -18,6 +18,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\CoreBundle\Model\Metadata;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ListingCategoryAdmin extends Admin
@@ -33,6 +34,11 @@ class ListingCategoryAdmin extends Admin
         '_sort_by' => 'root, lft'
     );
 
+    /**
+     * @param string $name
+     *
+     * @return null|string|void
+     */
     public function getTemplate($name)
     {
         switch ($name) {
@@ -119,7 +125,7 @@ class ListingCategoryAdmin extends Admin
                 );
         }
         $formMapper->add(
-            'image',
+            'file',
             FileType::class,
             array(
                 'required' => false,

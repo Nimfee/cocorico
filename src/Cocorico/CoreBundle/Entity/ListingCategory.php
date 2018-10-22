@@ -12,15 +12,18 @@
 namespace Cocorico\CoreBundle\Entity;
 
 use Cocorico\CoreBundle\Model\BaseListingCategory;
+use Cocorico\CoreBundle\Model\BaseListingImage;
 use Cocorico\CoreBundle\Model\ListingCategoryListingCategoryFieldInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * ListingCategory
  *
+ * @ORM\HasLifecycleCallbacks
  * @Gedmo\Tree(type="nested")
  *
  * @ORM\Entity(repositoryClass="Cocorico\CoreBundle\Repository\ListingCategoryRepository")
@@ -31,6 +34,13 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 class ListingCategory extends BaseListingCategory
 {
     use ORMBehaviors\Translatable\Translatable;
+
+    const SERVER_PATH_TO_IMAGE_FOLDER = '/server/path/to/images';
+
+    /**
+     * Unmapped property to handle file uploads
+     */
+    private $file;
 
     /**
      * @var integer
@@ -266,5 +276,57 @@ class ListingCategory extends BaseListingCategory
     public function getImage()
     {
         return $this->image;
+    }
+
+    /**
+     * Sets file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist($image)
+    {
+        $this->manageFileUpload($image);
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function preUpdate($image)
+    {
+        $this->manageFileUpload($image);
+    }
+
+    public function manageFileUpload()
+    {
+        if (null === $this->getFile()) {
+            return;
+        }
+        $this->getFile()->move(
+            BaseListingImage::IMAGE_FOLDER,
+            $this->getFile()->getClientOriginalName()
+        );
+
+        $listingCategoryImage = new ListingCategoryImage();
+        $listingCategoryImage->setName($this->getFile()->getClientOriginalName());
+        $this->setImage($listingCategoryImage);
+        $this->setFile(null);
     }
 }
