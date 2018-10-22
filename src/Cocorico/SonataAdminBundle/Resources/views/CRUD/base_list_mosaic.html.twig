@@ -1,0 +1,63 @@
+{% extends 'SonataAdminBundle:CRUD:list.html.twig' %}
+
+{% block list_table %}
+    <tr>
+        <td colspan="{{ admin.list.elements|length - (app.request.isXmlHttpRequest ? (admin.list.has('_action') + admin.list.has('batch')) : 0) }}">
+            <div class="row">
+                {% for object in admin.datagrid.results %}
+                    {% set meta = admin.getObjectMetadata(object) %}
+                    {% set mosaic_content %}
+                        <div class="mosaic-box-outter">
+                            <div class="mosaic-inner-box">
+                                {#
+                                    This box will be display when the mouse is not on the box
+                                #}
+
+                                <div class="mosaic-inner-box-default">
+                                    {% block sonata_mosaic_background %}
+                                        <img src="{{ meta.image }}" alt="" />
+                                    {% endblock %}
+                                    {% block sonata_mosaic_default_view %}
+                                        <span class="mosaic-box-label label label-primary pull-right">#{{ admin.id(object) }}</span>
+                                    {% endblock %}
+                                </div>
+
+                                {#
+                                    This box will be display when the mouse is on the box
+                                    You can add more description
+                                #}
+                                <div class="mosaic-inner-box-hover">
+                                    {% block sonata_mosaic_hover_view %}
+                                        <span class="mosaic-box-label label label-primary pull-right">#{{ admin.id(object) }}</span>
+                                        {{ meta.description }}
+                                    {% endblock %}
+                                </div>
+                            </div>
+
+                            {# NEXT_MAJOR : remove this assignment #}
+                            {% set export_formats = export_formats|default(admin.getExportFormats) %}
+
+                            <div class="mosaic-inner-text">
+                                &nbsp;
+                                {% block sonata_mosaic_description %}
+                                    {{ meta.title|truncate(40) }}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endset %}
+                    <div class="col-xs-6 col-sm-3 mosaic-box sonata-ba-list-field-batch sonata-ba-list-field"
+                         objectId="{{ admin.id(object) }}">
+                        {{ mosaic_content }}
+                    </div>
+
+                    {% if loop.index % 4 == 0 %}
+                        <div class="clearfix hidden-xs"></div>
+                    {% endif %}
+                    {% if loop.index % 2 == 0 %}
+                        <div class="clearfix visible-xs"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </td>
+    </tr>
+{% endblock %}

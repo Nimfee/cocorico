@@ -17,6 +17,8 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\CoreBundle\Model\Metadata;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ListingCategoryAdmin extends Admin
 {
@@ -30,6 +32,18 @@ class ListingCategoryAdmin extends Admin
         '_sort_order' => 'ASC',
         '_sort_by' => 'root, lft'
     );
+
+    public function getTemplate($name)
+    {
+        switch ($name) {
+            case 'list':
+                return 'CocoricoSonataAdminBundle::list_outer_rows_mosaic.html.twig';
+                break;
+            default:
+                return parent::getTemplate($name);
+                break;
+        }
+    }
 
     public function setLocales($locales)
     {
@@ -73,8 +87,8 @@ class ListingCategoryAdmin extends Admin
                             'locale_options' => $titles,
                         ),
                         'description' => array(
-                            'field_type' => 'text',
-                            'locale_options' => $titles,
+                            'field_type' => 'textarea',
+                            'locale_options' => $descriptions,
                         ),
                         'slug' => array(
                             'field_type' => 'hidden'
@@ -104,6 +118,14 @@ class ListingCategoryAdmin extends Admin
                     )
                 );
         }
+        $formMapper->add(
+            'image',
+            FileType::class,
+            array(
+                'required' => false,
+                'label' => 'admin.listing_category.images.label'
+            )
+        );
 
         $formMapper
             ->end();
@@ -221,5 +243,11 @@ class ListingCategoryAdmin extends Admin
     {
         //$collection->remove('create');
         //$collection->remove('delete');
+    }
+    public function getObjectMetadata($object)
+    {
+        $url = null != $object->getImage() ? $object->getImage()->getWebPath() : null;
+
+        return new Metadata($object->getName(), $object->getDescription(), $url);
     }
 }
