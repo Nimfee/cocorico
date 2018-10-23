@@ -37,7 +37,6 @@ class ListingCategoryImage extends BaseListingImage
 
     /**
      * @ORM\OneToOne(targetEntity="ListingCategory", inversedBy="image")
-     * @ORM\JoinColumn(name="listing_category_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $listingCategory;
 
@@ -79,5 +78,10 @@ class ListingCategoryImage extends BaseListingImage
         if ($this->id) {
             $this->id = null;
         }
+    }
+
+    public function __construct()
+    {
+        $this->position = 1;
     }
 }

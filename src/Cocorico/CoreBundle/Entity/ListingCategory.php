@@ -23,10 +23,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 /**
  * ListingCategory
  *
- * @ORM\HasLifecycleCallbacks
  * @Gedmo\Tree(type="nested")
  *
  * @ORM\Entity(repositoryClass="Cocorico\CoreBundle\Repository\ListingCategoryRepository")
+ *
+ * @ORM\HasLifecycleCallbacks
  *
  * @ORM\Table(name="listing_category")
  *
@@ -34,8 +35,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class ListingCategory extends BaseListingCategory
 {
     use ORMBehaviors\Translatable\Translatable;
-
-    const SERVER_PATH_TO_IMAGE_FOLDER = '/server/path/to/images';
 
     /**
      * Unmapped property to handle file uploads
@@ -80,7 +79,7 @@ class ListingCategory extends BaseListingCategory
      * For Asserts @see \Cocorico\CoreBundle\Validator\Constraints\ListingValidator
      *
      * @ORM\OneToOne(targetEntity="ListingCategoryImage", mappedBy="listingCategory", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\OrderBy({"position" = "asc"})
+     * @ORM\JoinColumn(name="listing_category_image_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      */
     private $image;
 
@@ -257,12 +256,14 @@ class ListingCategory extends BaseListingCategory
     /**
      * Set image
      *
-     * @param  \Cocorico\CoreBundle\Entity\ListingCategoryImage $image
+     * @param  \Cocorico\CoreBundle\Entity\ListingCategoryImage|null $image
      * @return ListingCategory
      */
-    public function setImage(ListingCategoryImage $image)
+    public function setImage(ListingCategoryImage $image = null)
     {
-        $image->setListingCategory($this);
+        if (null !== $image) {
+            $image->setListingCategory($this);
+        }
         $this->image = $image;
 
         return $this;
@@ -286,6 +287,7 @@ class ListingCategory extends BaseListingCategory
     public function setFile(UploadedFile $file = null)
     {
         $this->file = $file;
+        $this->manageFileUpload();
     }
 
     /**
@@ -298,33 +300,17 @@ class ListingCategory extends BaseListingCategory
         return $this->file;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist($image)
-    {
-        $this->manageFileUpload($image);
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function preUpdate($image)
-    {
-        $this->manageFileUpload($image);
-    }
-
     public function manageFileUpload()
     {
         if (null === $this->getFile()) {
             return;
         }
         $this->getFile()->move(
-            BaseListingImage::IMAGE_FOLDER,
+            __DIR__ . '/../../../web' . BaseListingImage::IMAGE_FOLDER,
             $this->getFile()->getClientOriginalName()
         );
 
-        $listingCategoryImage = new ListingCategoryImage();
+        $listingCategoryImage = null === $this->getImage() ? new ListingCategoryImage() : $this->getImage();
         $listingCategoryImage->setName($this->getFile()->getClientOriginalName());
         $this->setImage($listingCategoryImage);
         $this->setFile(null);

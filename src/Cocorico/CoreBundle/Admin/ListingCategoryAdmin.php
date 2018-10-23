@@ -250,10 +250,4 @@ class ListingCategoryAdmin extends Admin
         //$collection->remove('create');
         //$collection->remove('delete');
     }
-    public function getObjectMetadata($object)
-    {
-        $url = null != $object->getImage() ? $object->getImage()->getWebPath() : null;
-
-        return new Metadata($object->getName(), $object->getDescription(), $url);
-    }
 }
